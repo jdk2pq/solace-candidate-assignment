@@ -1,57 +1,57 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from 'react'
-import { Advocate } from '@/types/advocate'
+import debounce from 'lodash.debounce'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AdvocatesTable } from '@/components/AdvocatesTable'
+import { getAdvocates } from '@/api/advocates'
+import type { Advocate } from '@/types/advocate'
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
-  }, []);
+    async function fetchAdvocates() {
+      const advocates = await getAdvocates();
+      setAdvocates(advocates);
+      setLoading(false);
+    }
+    fetchAdvocates();
+  }, [])
 
-  function onChange(e: ChangeEvent<HTMLInputElement>) {
-    const newSearchTerm = e.target.value;
-    const lowerCasedSearchTerm = newSearchTerm.toLowerCase()
+  async function getFilteredAdvocates(query: string) {
+    const advocates = await getAdvocates(query);
+    setFilteredAdvocates(advocates);
+    setLoading(false);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debounced_getFilteredAdvocates = useCallback(debounce(getFilteredAdvocates, 300), []);
+
+  async function onChange(e: ChangeEvent<HTMLInputElement>) {
+    const newSearchTerm = e.target.value.toLowerCase();
     setSearchTerm(newSearchTerm)
-
-    const filteredAdvocates = advocates.filter((advocate) => {
-      return (
-        advocate.firstName.toLowerCase().includes(lowerCasedSearchTerm) ||
-        advocate.lastName.toLowerCase().includes(lowerCasedSearchTerm) ||
-        advocate.city.toLowerCase().includes(lowerCasedSearchTerm) ||
-        advocate.degree.toLowerCase().includes(lowerCasedSearchTerm) ||
-        advocate.specialties.some(s => s.toLowerCase().includes(lowerCasedSearchTerm)) ||
-        advocate.yearsOfExperience.toString().includes(lowerCasedSearchTerm)
-      );
-    });
-
-    setFilteredAdvocates(filteredAdvocates);
+    if (newSearchTerm.trim() && newSearchTerm.trim() !== searchTerm.trim()) {
+      setLoading(true);
+      await debounced_getFilteredAdvocates(newSearchTerm);
+    }
   }
 
   function onClick() {
-    setFilteredAdvocates(advocates);
     setSearchTerm('');
   }
 
   return (
-    <main style={{ margin: "24px" }}>
-      <h1 className="text-4xl pb-8">Solace Advocates</h1>
-      <div className="flex gap-x-2 pb-4">
-        <Input type="text" placeholder="Search" className="w-[400px]" value={searchTerm} onChange={onChange} />
+    <main className="m-6">
+      <div className="flex gap-x-2 pb-4 justify-end">
+        <Input autoFocus type="text" placeholder="Search" className="w-[400px]" value={searchTerm} onChange={onChange} />
         <Button className="cursor-pointer" onClick={onClick}>Reset Search</Button>
       </div>
-      <AdvocatesTable advocates={filteredAdvocates} />
+      <h3 className="text-center text-3xl pb-8">Solace Advocates</h3>
+      <AdvocatesTable advocates={searchTerm.trim() && !loading ? filteredAdvocates : loading ? [] : advocates} loading={loading} />
     </main>
   );
 }
