@@ -38,20 +38,17 @@ export default function Home() {
 
   function onClick() {
     setFilteredAdvocates(advocates);
+    setSearchTerm('');
   }
 
   return (
     <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
+      <h1 className="text-4xl pb-8">Solace Advocates</h1>
       <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term">{searchTerm}</span>
-        </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
+        <label>Search
+          <input className="border border-black mx-2 rounded w-[400px] h-[32px] px-2" value={searchTerm} onChange={onChange} />
+        </label>
+        <button className="rounded-2xl border py-1 px-4 shadow cursor-pointer hover:bg-sky-200 bg-sky-100" onClick={onClick}>Reset Search</button>
       </div>
       <br />
       <br />
