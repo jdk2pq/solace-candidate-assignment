@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { AdvocatesTable } from '@/components/AdvocatesTable'
 import { getAdvocates } from '@/api/advocates'
 import type { Advocate } from '@/types/advocate'
+import { ModeToggle } from '@/components/ui/mode-toggle'
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,10 +46,11 @@ export default function Home() {
   }
 
   return (
-    <main className="m-6">
+    <main className="m-8">
       <div className="flex gap-x-2 pb-4 justify-end">
         <Input autoFocus type="text" placeholder="Search" className="w-[400px]" value={searchTerm} onChange={onChange} />
         <Button className="cursor-pointer" onClick={onClick}>Reset Search</Button>
+        <ModeToggle />
       </div>
       <h3 className="text-center text-3xl pb-8">Solace Advocates</h3>
       <AdvocatesTable advocates={searchTerm.trim() && !loading ? filteredAdvocates : loading ? [] : advocates} loading={loading} />
