@@ -5,6 +5,8 @@ My focus on this project was to get the application working and fix any big issu
 
 I also moved the client-side filtering to the API to reduce the amount of data sent to the client and improve performance on the client, with the assumption being that the list of advocates would grow to hundreds of thousands. There's a debounce on the search input too to reduce the number of requests sent to the API as a user types.
 
+Additionally, I wanted to break up each improvement into digestible and atomic PRs, rather than do one gigantic PR all at once.
+
 ### Specific changes
 
 [PR #1](https://github.com/jdk2pq/solace-candidate-assignment/pull/1)
