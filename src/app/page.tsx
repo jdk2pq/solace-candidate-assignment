@@ -2,6 +2,9 @@
 
 import { ChangeEvent, useEffect, useState } from 'react'
 import { Advocate } from '@/types/advocate'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { AdvocatesTable } from '@/components/AdvocatesTable'
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,46 +47,11 @@ export default function Home() {
   return (
     <main style={{ margin: "24px" }}>
       <h1 className="text-4xl pb-8">Solace Advocates</h1>
-      <div>
-        <label>Search
-          <input className="border border-black mx-2 rounded w-[400px] h-[32px] px-2" value={searchTerm} onChange={onChange} />
-        </label>
-        <button className="rounded-2xl border py-1 px-4 shadow cursor-pointer hover:bg-sky-200 bg-sky-100" onClick={onClick}>Reset Search</button>
+      <div className="flex gap-x-2 pb-4">
+        <Input type="text" placeholder="Search" className="w-[400px]" value={searchTerm} onChange={onChange} />
+        <Button className="cursor-pointer" onClick={onClick}>Reset Search</Button>
       </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>City</th>
-            <th>Degree</th>
-            <th>Specialties</th>
-            <th>Years of Experience</th>
-            <th>Phone Number</th>
-          </tr>
-        </thead>
-        <tbody>
-        {filteredAdvocates.map((advocate) => {
-          return (
-            <tr key={advocate.firstName + advocate.lastName + advocate.phoneNumber}>
-              <td>{advocate.firstName}</td>
-              <td>{advocate.lastName}</td>
-              <td>{advocate.city}</td>
-              <td>{advocate.degree}</td>
-              <td>
-                {advocate.specialties.map((s) => (
-                  <div key={s}>{s}</div>
-                ))}
-              </td>
-              <td>{advocate.yearsOfExperience}</td>
-              <td>{advocate.phoneNumber}</td>
-            </tr>
-          );
-        })}
-        </tbody>
-      </table>
+      <AdvocatesTable advocates={filteredAdvocates} />
     </main>
   );
 }
